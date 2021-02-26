@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= product.name %> Details</title>
+  </head>
+  <body>
+    <h1><%= product.name %> Details</h1>
+    <img
+      src="<%= product.image %>"
+      alt=""
+      style="width: 200px; height: 200px"
+    />
+    <ul>
+      <li>Name: <%= product.name %></li>
+      <li>Price: <%= product.price %></li>
+      <li>Category: <%= product.category %></li>
+    </ul>
+    <a href="/products"><button>Back to Products</button></a>
+  </body>
+</html>
