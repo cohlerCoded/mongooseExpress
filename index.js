@@ -54,8 +54,13 @@ app.get("/products/:id/edit", async (req, res) => {
 });
 
 app.put("/products/:id", async (req, res) => {
+  const { id } = req.params;
+  const product = await Product.findByIdAndUpdate(id, req.body, {
+    runValidators: true,
+    new: true,
+  });
   console.log(req.body);
-  res.send("PUT");
+  res.redirect(`/products/${product._id}`);
 });
 
 app.listen(7001, () => {

@@ -18,6 +18,11 @@
       <li>Price: <%= product.price %></li>
       <li>Category: <%= product.category %></li>
     </ul>
-    <a href="/products"><button>Back to Products</button></a>
+    <div>
+      <a href="/products/<%= product._id  %>/edit "><button>Edit</button></a>
+    </div>
+    <div>
+      <a href="/products"><button>Back to Products</button></a>
+    </div>
   </body>
 </html>
