@@ -29,9 +29,9 @@
           value="<%= product.category  %>"
           required
         >
-          <option value="fruit">fruit</option>
-          <option value="vegetable">vegetable</option>
-          <option value="dairy">dairy</option>
+        <% for(let category of categories){ %>
+          <option value="<%= category %>" <%= product.category === category ? 'selected' : '' %>><%= category %></option>
+          <% } %>
         </select>
       </div>
       <div>
