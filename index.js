@@ -61,8 +61,13 @@ app.put("/products/:id", async (req, res) => {
     runValidators: true,
     new: true,
   });
-  console.log(req.body);
   res.redirect(`/products/${product._id}`);
+});
+
+app.delete("/products/:id", async (req, res) => {
+  const { id } = req.params;
+  const product = await Product.findByIdAndDelete(id);
+  res.redirect(`/products`);
 });
 
 app.listen(7001, () => {
