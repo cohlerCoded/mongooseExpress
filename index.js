@@ -28,53 +28,73 @@ app.use(methodOverride("_method"));
 
 const categories = ["fruit", "vegetable", "dairy", "fungi"];
 
-app.get("/products", async (req, res) => {
-  const products = await Product.find({});
-  res.render("products/index", { products });
+app.get("/products", async (req, res, next) => {
+  try {
+    const products = await Product.find({});
+    res.render("products/index", { products });
+  } catch (err) {
+    next(err);
+  }
 });
 
 app.get("/products/new", (req, res) => {
   res.render("products/new", { categories });
 });
 
-app.post("/products", async (req, res) => {
-  const newProduct = new Product(req.body);
-  await newProduct.save();
-  console.log(newProduct);
-  res.redirect(`/products/${newProduct._id}`);
+app.post("/products", async (req, res, next) => {
+  try {
+    const newProduct = new Product(req.body);
+    await newProduct.save();
+    console.log(newProduct);
+    res.redirect(`/products/${newProduct._id}`);
+  } catch (err) {
+    next(err);
+  }
 });
 
 app.get("/products/:id", async (req, res, next) => {
-  const { id } = req.params;
-  if (!ObjectID.isValid(id)) {
-    return next(new AppError("INVALID ID", 400));
+  try {
+    const { id } = req.params;
+    if (!ObjectID.isValid(id)) {
+      throw new AppError("INVALID ID", 400);
+    }
+    const product = await Product.findById(id);
+    if (!product) {
+      throw new AppError(`PRODUCT NOT FOUND`, 404);
+    }
+    res.render("products/details", { product });
+  } catch (err) {
+    next(err);
   }
-  const product = await Product.findById(id);
-  if (!product) {
-    return next(new AppError(`PRODUCT NOT FOUND`, 404));
-  }
-  res.render("products/details", { product });
 });
 
 app.get("/products/:id/edit", async (req, res, next) => {
-  const { id } = req.params;
-  if (!ObjectID.isValid(id)) {
-    return next(new AppError("INVALID ID", 400));
+  try {
+    const { id } = req.params;
+    if (!ObjectID.isValid(id)) {
+      throw new AppError("INVALID ID", 400);
+    }
+    const product = await Product.findById(id);
+    if (!product) {
+      throw new AppError(`PRODUCT NOT FOUND`, 404);
+    }
+    res.render("products/edit", { product, categories });
+  } catch (err) {
+    next(err);
   }
-  const product = await Product.findById(id);
-  if (!product) {
-    return next(new AppError(`PRODUCT NOT FOUND`, 404));
-  }
-  res.render("products/edit", { product, categories });
 });
 
-app.put("/products/:id", async (req, res) => {
+app.put("/products/:id", async (req, res, next) => {
   const { id } = req.params;
-  const product = await Product.findByIdAndUpdate(id, req.body, {
-    runValidators: true,
-    new: true,
-  });
-  res.redirect(`/products/${product._id}`);
+  try {
+    const product = await Product.findByIdAndUpdate(id, req.body, {
+      runValidators: true,
+      new: true,
+    });
+    res.redirect(`/products/${product._id}`);
+  } catch (err) {
+    next(err);
+  }
 });
 
 app.delete("/products/:id", async (req, res) => {
