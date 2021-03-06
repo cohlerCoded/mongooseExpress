@@ -28,32 +28,37 @@ app.use(methodOverride("_method"));
 
 const categories = ["fruit", "vegetable", "dairy", "fungi"];
 
-app.get("/products", async (req, res, next) => {
-  try {
+function wrapAsync(func) {
+  return function (req, res, next) {
+    func(req, res, next).catch((err) => next(err));
+  };
+}
+
+app.get(
+  "/products",
+  wrapAsync(async (req, res, next) => {
     const products = await Product.find({});
     res.render("products/index", { products });
-  } catch (err) {
-    next(err);
-  }
-});
+  })
+);
 
 app.get("/products/new", (req, res) => {
   res.render("products/new", { categories });
 });
 
-app.post("/products", async (req, res, next) => {
-  try {
+app.post(
+  "/products",
+  wrapAsync(async (req, res, next) => {
     const newProduct = new Product(req.body);
     await newProduct.save();
     console.log(newProduct);
     res.redirect(`/products/${newProduct._id}`);
-  } catch (err) {
-    next(err);
-  }
-});
+  })
+);
 
-app.get("/products/:id", async (req, res, next) => {
-  try {
+app.get(
+  "/products/:id",
+  wrapAsync(async (req, res, next) => {
     const { id } = req.params;
     if (!ObjectID.isValid(id)) {
       throw new AppError("INVALID ID", 400);
@@ -63,13 +68,12 @@ app.get("/products/:id", async (req, res, next) => {
       throw new AppError(`PRODUCT NOT FOUND`, 404);
     }
     res.render("products/details", { product });
-  } catch (err) {
-    next(err);
-  }
-});
+  })
+);
 
-app.get("/products/:id/edit", async (req, res, next) => {
-  try {
+app.get(
+  "/products/:id/edit",
+  wrapAsync(async (req, res, next) => {
     const { id } = req.params;
     if (!ObjectID.isValid(id)) {
       throw new AppError("INVALID ID", 400);
@@ -79,29 +83,29 @@ app.get("/products/:id/edit", async (req, res, next) => {
       throw new AppError(`PRODUCT NOT FOUND`, 404);
     }
     res.render("products/edit", { product, categories });
-  } catch (err) {
-    next(err);
-  }
-});
+  })
+);
 
-app.put("/products/:id", async (req, res, next) => {
-  const { id } = req.params;
-  try {
+app.put(
+  "/products/:id",
+  wrapAsync(async (req, res, next) => {
+    const { id } = req.params;
     const product = await Product.findByIdAndUpdate(id, req.body, {
       runValidators: true,
       new: true,
     });
     res.redirect(`/products/${product._id}`);
-  } catch (err) {
-    next(err);
-  }
-});
+  })
+);
 
-app.delete("/products/:id", async (req, res) => {
-  const { id } = req.params;
-  const product = await Product.findByIdAndDelete(id);
-  res.redirect(`/products`);
-});
+app.delete(
+  "/products/:id",
+  wrapAsync(async (req, res) => {
+    const { id } = req.params;
+    const product = await Product.findByIdAndDelete(id);
+    res.redirect(`/products`);
+  })
+);
 
 app.use((err, req, res, next) => {
   const { message = "OOPS ERROR", status = 500 } = err;
