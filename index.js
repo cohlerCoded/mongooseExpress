@@ -7,6 +7,7 @@ const ObjectID = require("mongodb").ObjectID;
 const AppError = require("./AppError");
 
 const Product = require("./models/product");
+const Farm = require("./models/farm");
 
 mongoose
   .connect("mongodb://localhost:27017/farmStand", {
@@ -26,6 +27,31 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 
+//Farm Routes
+app.get("/farms/new", (req, res) => {
+  res.render("farms/new");
+});
+
+app.post(
+  "/farms",
+  wrapAsync(async (req, res, next) => {
+    const newFarm = new Farm(req.body);
+    await newFarm.save();
+    console.log(newFarm);
+    res.redirect(`/farms`);
+    //res.redirect(`/farms/${newFarm._id}`);
+  })
+);
+
+app.get(
+  "/farms",
+  wrapAsync(async (req, res, next) => {
+    const farms = await Farm.find({});
+    res.render("farms/index", { farms });
+  })
+);
+
+//Product Routes
 const categories = ["fruit", "vegetable", "dairy", "fungi"];
 
 function wrapAsync(func) {
