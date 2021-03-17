@@ -13,7 +13,7 @@ const farmSchema = new Schema({
     type: String,
     required: [true, "Farm must have an email"],
   },
-  product: [
+  products: [
     {
       type: Schema.Types.ObjectId,
       ref: "Product",

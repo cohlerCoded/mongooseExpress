@@ -65,6 +65,26 @@ app.get(
     res.render("farms/details", { farm });
   })
 );
+
+app.get("/farms/:id/products/new", (req, res) => {
+  const { id } = req.params;
+  res.render("products/new", { categories, id });
+});
+
+app.post(
+  "/farms/:id/products",
+  wrapAsync(async (req, res, next) => {
+    const { id } = req.params;
+    const farm = await Farm.findById(id);
+    const newProduct = new Product(req.body);
+    farm.products.push(newProduct);
+    newProduct.farm = farm;
+    await farm.save();
+    await newProduct.save();
+    res.redirect(`/products/${newProduct._id}`);
+  })
+);
+
 //Product Routes
 const categories = ["fruit", "vegetable", "dairy", "fungi"];
 
