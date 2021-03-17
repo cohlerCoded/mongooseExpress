@@ -7,8 +7,9 @@
     <title>New Product</title>
   </head>
   <body>
-    <h1>Add a Product</h1>
-    <form action="/farms/<%= id %>/products" method="post">
+    <h1><%= farm.name %></h1>
+    <h2>Add a Product</h2>
+    <form action="/farms/<%= farm._id %>/products" method="post">
       <div>
         <label for="name">Product Name</label>
         <input
@@ -50,7 +51,7 @@
       <button>Submit</button>
     </form>
     <div>
-      <a href="/products"><button>Cancel</button></a>
+      <a href="/farms/<%= farm._id %> "><button>Cancel</button></a>
     </div>
   </body>
 </html>
