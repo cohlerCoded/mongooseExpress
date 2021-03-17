@@ -89,6 +89,14 @@ app.post(
   })
 );
 
+app.delete(
+  "/farms/:id",
+  wrapAsync(async (req, res, next) => {
+    const farm = await Farm.findByIdAndDelete(req.params.id);
+    res.redirect("/farms");
+  })
+);
+
 //Product Routes
 const categories = ["fruit", "vegetable", "dairy", "fungi"];
 
