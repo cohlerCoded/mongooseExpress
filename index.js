@@ -51,6 +51,20 @@ app.get(
   })
 );
 
+app.get(
+  "/farms/:id",
+  wrapAsync(async (req, res, next) => {
+    const { id } = req.params;
+    if (!ObjectID.isValid(id)) {
+      throw new AppError("INVALID ID", 400);
+    }
+    const farm = await Farm.findById(id);
+    if (!farm) {
+      throw new AppError(`FARM NOT FOUND`, 404);
+    }
+    res.render("farms/details", { farm });
+  })
+);
 //Product Routes
 const categories = ["fruit", "vegetable", "dairy", "fungi"];
 
