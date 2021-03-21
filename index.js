@@ -3,9 +3,18 @@ const app = express();
 const path = require("path");
 const mongoose = require("mongoose");
 const methodOverride = require("method-override");
-const ObjectID = require("mongodb").ObjectID;
-const AppError = require("./AppError");
+const session = require("express-session");
+const flash = require("connect-flash");
 
+const sessionOptions = {
+  secret: "thisisnotagoodsecret",
+  resave: false,
+  saveUninitialized: false,
+};
+
+const ObjectID = require("mongodb").ObjectID;
+
+const AppError = require("./AppError");
 const Product = require("./models/product");
 const Farm = require("./models/farm");
 
@@ -26,6 +35,8 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
+app.use(session(sessionOptions));
+app.use(flash());
 
 //Farm Routes
 app.get("/farms/new", (req, res) => {
@@ -37,7 +48,7 @@ app.post(
   wrapAsync(async (req, res, next) => {
     const newFarm = new Farm(req.body);
     await newFarm.save();
-    console.log(newFarm);
+    req.flash("success", "Successfully made a new farm!");
     res.redirect(`/farms`);
     //res.redirect(`/farms/${newFarm._id}`);
   })
@@ -47,7 +58,7 @@ app.get(
   "/farms",
   wrapAsync(async (req, res, next) => {
     const farms = await Farm.find({});
-    res.render("farms/index", { farms });
+    res.render("farms/index", { farms, messages: req.flash("success") });
   })
 );
 
